@@ -12,6 +12,6 @@ def displayText(screen, text, x, y, size = 10, color = (255, 255, 255), font_typ
 		text = font.render(text, True, color)
 		screen.blit(text, (x, y))
 
-	except Exception, e:
-		print "Font Error!"
+	except Exception as e:
+		print("Font Error!")
 		raise e

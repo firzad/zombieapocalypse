@@ -25,7 +25,7 @@ class Character(pygame.Rect):
 
 
 	def getNumber(self):
-		return ((self.x / Character.width) + Tile.Hz) + ((self.y / Character.height) * Tile.Vt)
+		return ((self.x // Character.width) + Tile.Hz) + ((self.y // Character.height) * Tile.Vt)
 
 	def getTile(self):
 		return Tile.getTile(self.getNumber())
@@ -201,7 +201,7 @@ class Survivor(Character):
 
 
 	def draw(self, screen):
-		h = self.width/2
+		h = self.width//2
 		#pygame.draw.circle(screen, [77, 234, 156], (self.x + h, self.y + h), h)
 		
 		screen.blit(self.img, (self.x, self.y))
@@ -218,7 +218,7 @@ class Survivor(Character):
 			screen.blit(img, (self.x +h, self.y + h))
 		elif self.direction == 'N':
 			img = pygame.transform.rotate(img, 270)
-			screen.blit(img, (self.x +h, self.y - h/2))
+			screen.blit(img, (self.x +h, self.y - h//2))
 
 
 	

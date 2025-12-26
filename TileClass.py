@@ -65,7 +65,7 @@ class Tile(pygame.Rect):
 	@staticmethod
 	def drawTiles(screen):
 
-		half = Tile.width / 2
+		half = Tile.width // 2
 
 		for tile in Tile.List:
 

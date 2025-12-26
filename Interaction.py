@@ -10,8 +10,8 @@ def interaction(screen, survivor):
 
 	#Mouse Pointer Coordinates
 	Mpos = pygame.mouse.get_pos()
-	Mx = Mpos[0] / Tile.width
-	My = Mpos[1] / Tile.height
+	Mx = Mpos[0] // Tile.width
+	My = Mpos[1] // Tile.height
 
 
 

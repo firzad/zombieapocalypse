@@ -18,7 +18,7 @@ def AStar(screen, survivor, FPS, totalFrames):
 	SE = 33
 	SW = 31
 
-	half = Tile.width / 2
+	half = Tile.width // 2
 
 	#Reset F,G,H Values: Zombie Blocked By Walls
 	for tile in Tile.List:
