@@ -1,12 +1,29 @@
-# Interaction Processes
+"""
+Player Interaction Handler for Zombie Apocalypse
 
+Processes keyboard and mouse input for player movement and shooting.
+"""
 
-import pygame, sys
+import pygame
+import sys
+
+import config
 from TileClass import Tile
 from ObjectClass import Bullets
 
 
-def interaction(screen, survivor):
+def interaction(screen, survivor, paused=False):
+	"""
+	Handle all player input and interactions.
+
+	Args:
+		screen: Pygame screen surface
+		survivor: Player character
+		paused (bool): Current pause state
+
+	Returns:
+		bool: New pause state
+	"""
 
 	#Mouse Pointer Coordinates
 	Mpos = pygame.mouse.get_pos()
@@ -21,6 +38,11 @@ def interaction(screen, survivor):
 		if event.type == pygame.QUIT:
 			pygame.quit()
 			sys.exit()
+
+		#Handle ESC key for pause
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_ESCAPE:
+				return not paused  # Toggle pause state
 
 		#Create Solid Tiles: Mouse Click
 		if event.type == pygame.MOUSEBUTTONDOWN:
@@ -40,6 +62,7 @@ def interaction(screen, survivor):
 	#Character Movement
 	keys = pygame.key.get_pressed()
 
+	# Movement with arrow keys (also sets facing direction)
 	if keys[pygame.K_UP]:
 		futureTileNumber = survivor.getNumber() - Tile.Vt
 
@@ -49,7 +72,6 @@ def interaction(screen, survivor):
 			if futureTile.walkable:
 				survivor.setTarget(futureTile)
 				survivor.rotate('N')
-				#survivor.y -= survivor.height 
 
 	if keys[pygame.K_DOWN]:
 		futureTileNumber = survivor.getNumber() + Tile.Vt
@@ -59,7 +81,6 @@ def interaction(screen, survivor):
 			if futureTile.walkable:
 				survivor.setTarget(futureTile)
 				survivor.rotate('S')
-				#survivor.y += survivor.height
 
 	if keys[pygame.K_RIGHT]:
 		futureTileNumber = survivor.getNumber() + Tile.Hz
@@ -69,7 +90,6 @@ def interaction(screen, survivor):
 			if futureTile.walkable:
 				survivor.setTarget(futureTile)
 				survivor.rotate('E')
-				#survivor.x += survivor.width
 
 	if keys[pygame.K_LEFT]:
 		futureTileNumber = survivor.getNumber() - Tile.Hz
@@ -79,23 +99,16 @@ def interaction(screen, survivor):
 			if futureTile.walkable:
 				survivor.setTarget(futureTile)
 				survivor.rotate('W')
-				#survivor.x -= survivor.width
 
+	# Shooting with spacebar in current facing direction
+	if keys[pygame.K_SPACE]:
+		if survivor.direction == 'N':
+			Bullets(survivor.centerx, survivor.centery, 0, -10, 'N', survivor.getBulletType())
+		elif survivor.direction == 'S':
+			Bullets(survivor.centerx, survivor.centery, 0, 10, 'S', survivor.getBulletType())
+		elif survivor.direction == 'E':
+			Bullets(survivor.centerx, survivor.centery, 10, 0, 'E', survivor.getBulletType())
+		elif survivor.direction == 'W':
+			Bullets(survivor.centerx, survivor.centery, -10, 0, 'W', survivor.getBulletType())
 
-	if keys[pygame.K_w]:
-		survivor.rotate('N')
-		Bullets(survivor.centerx, survivor.centery, 0, -10, 'N', survivor.getBulletType())
-
-	elif keys[pygame.K_s]:
-		survivor.rotate('S')
-		Bullets(survivor.centerx, survivor.centery, 0, 10, 'S', survivor.getBulletType())
-
-	elif keys[pygame.K_d]:
-		survivor.rotate('E')
-		Bullets(survivor.centerx, survivor.centery, 10, 0, 'E', survivor.getBulletType())
-
-	elif keys[pygame.K_a]:
-		survivor.rotate('W')
-		Bullets(survivor.centerx, survivor.centery, -10, 0, 'W', survivor.getBulletType())
-	
-
+	return paused  # Return unchanged pause state

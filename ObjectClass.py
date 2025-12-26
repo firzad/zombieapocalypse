@@ -1,55 +1,97 @@
-# Classes For Objects Used
+"""
+Object Classes for Zombie Apocalypse
+
+Contains all game entity classes: Character, Zombie, Survivor, and Bullets.
+"""
 
 import pygame
+from random import randint, choice
+
+import config
 from TileClass import Tile
-from random import randint
 
 
-#Base Class for Characters
 class Character(pygame.Rect):
+	"""
+	Base class for all game characters (Player and Zombies).
 
-	width, height = 40, 40
+	Inherits from pygame.Rect for built-in collision detection and positioning.
+	Manages tile-based movement and targeting.
+	"""
+
+	width, height = config.TILE_WIDTH, config.TILE_HEIGHT
 
 	def __init__(self, x, y):
-		self.tx , self.ty = None, None
+		"""
+		Initialize character at given position.
+
+		Args:
+			x (int): X coordinate in pixels
+			y (int): Y coordinate in pixels
+		"""
+		self.tx, self.ty = None, None  # Target coordinates for movement
 		pygame.Rect.__init__(self, x, y, Character.width, Character.height)
 
 	def __str__(self):
+		"""Return string representation (tile number)."""
 		return str(self.getNumber())
 
-
 	def setTarget(self, nextTile):
-		if self.tx == None and self.ty == None:
+		"""
+		Set the target tile for character to move towards.
+
+		Args:
+			nextTile (Tile): The tile to move to
+		"""
+		if self.tx is None and self.ty is None:
 			self.tx = nextTile.x
 			self.ty = nextTile.y
 
-
 	def getNumber(self):
+		"""
+		Get the tile number of the character's current position.
+
+		Returns:
+			int: Tile number in the grid
+		"""
 		return ((self.x // Character.width) + Tile.Hz) + ((self.y // Character.height) * Tile.Vt)
 
 	def getTile(self):
+		"""
+		Get the Tile object the character is currently on.
+
+		Returns:
+			Tile: The tile at character's current position
+		"""
 		return Tile.getTile(self.getNumber())
 
 
 
 class Zombie(Character):
+	"""
+	Zombie enemy class.
+
+	Zombies spawn at designated points, use A* pathfinding to chase the player,
+	and deal damage when adjacent.
+	"""
 
 	List = []
-	spawnTiles = (38, 42, 55, 62, 262, 533)
-	originalImage = pygame.image.load("Images/zombie.png")
-	health = 100
+	spawnTiles = config.ZOMBIE_SPAWN_TILES
+	originalImage = pygame.image.load(config.IMAGE_ZOMBIE)
+	base_health = config.ZOMBIE_HEALTH
 
 	def __init__(self, x, y):
-		
-		self.health = Zombie.health 
-		self.vel = 4
-		
-		#Random Movement Speed
-		r = randint(1,2) 
-		if r == 1:
-			self.vel = 4
-		elif r ==2:
-			self.vel = 8
+		"""
+		Create a new zombie at the given position.
+
+		Args:
+			x (int): X coordinate in pixels
+			y (int): Y coordinate in pixels
+		"""
+		self.health = Zombie.base_health
+
+		# Random movement speed selection
+		self.vel = choice(config.ZOMBIE_SPEEDS)
 
 		self.direction = 'W'
 		self.img = Zombie.originalImage
@@ -58,6 +100,13 @@ class Zombie(Character):
 
 
 	def rotate(self, direction, originalImage):
+		"""
+		Rotate zombie sprite to face the given direction.
+
+		Args:
+			direction (str): Direction to face ('N', 'S', 'E', 'W')
+			originalImage: Base zombie image to rotate
+		"""
 
 		if direction == 'N':
 			if self.direction != 'N':
@@ -84,30 +133,39 @@ class Zombie(Character):
 
 	@staticmethod
 	def spawn(totalFrames, FPS):
+		"""
+		Spawn new zombies at designated spawn points.
 
-		#Set Spawning Interval of Zombies
-		if totalFrames % (FPS) == 0:
-
-			#if totalFrames % (FPS * 6) == 0:		
-			#Set zombie sound interval
-			q = randint(0,2)
-			sounds = 	[pygame.mixer.Sound("Audio/zs1.ogg"),
-						pygame.mixer.Sound("Audio/zs2.ogg"),
-						pygame.mixer.Sound("Audio/zs3.ogg")]
-
-			sound = sounds[q]
+		Args:
+			totalFrames (int): Total frames elapsed since game start
+			FPS (int): Frames per second
+		"""
+		# Spawn a zombie every second (every FPS frames)
+		if totalFrames % FPS == 0:
+			# Play random zombie spawn sound
+			sound_path = choice(config.AUDIO_ZOMBIE_SPAWN)
+			sound = pygame.mixer.Sound(sound_path)
+			sound.set_volume(config.SFX_VOLUME)
 			sound.play()
 
-			r = randint(0, len(Zombie.spawnTiles) - 1)
-			spawnTileNumber = Zombie.spawnTiles[r]
+			# Select random spawn tile
+			spawnTileNumber = choice(Zombie.spawnTiles)
 			spawnNode = Tile.getTile(spawnTileNumber)
-			
+
+			# Create new zombie
 			Zombie(spawnNode.x, spawnNode.y)
 
 
 
 	@staticmethod
 	def update(screen, survivor):
+		"""
+		Update all zombies - render them and check for player collision.
+
+		Args:
+			screen: Pygame screen surface
+			survivor (Survivor): Player character to check collision with
+		"""
 
 
 		for zombie in Zombie.List:
@@ -127,7 +185,7 @@ class Zombie(Character):
 					NSEW = [N, S, E, W, tileNo]
 
 					if zombie.getNumber() in NSEW:
-						survivor.health -= 5
+						survivor.health -= config.ZOMBIE_DAMAGE
 					if survivor.health <=0:
 						return
 
@@ -178,32 +236,49 @@ class Zombie(Character):
 
 
 
-#Survivor Object Class
 class Survivor(Character):
-	
+	"""
+	Player character class.
 
-	gunsImg = [	pygame.image.load("Images/pistol.png"),
-				pygame.image.load("Images/shotgun.png"),
-				pygame.image.load("Images/automatic.png")]
+	The survivor can move in 4 directions, shoot in 4 directions,
+	and switch between three weapons.
+	"""
 
-	weapon = ["PISTOL", "SHOTGUN", "SEMI-AUTOMATIC"]
+	gunsImg = [
+		pygame.image.load(config.IMAGE_PISTOL),
+		pygame.image.load(config.IMAGE_SHOTGUN),
+		pygame.image.load(config.IMAGE_AUTOMATIC)
+	]
 
+	weapon = config.WEAPON_NAMES
 
 	def __init__(self, x, y):
+		"""
+		Create the player character.
 
-		self.health = 1500
+		Args:
+			x (int): Starting X coordinate
+			y (int): Starting Y coordinate
+		"""
+		self.health = config.PLAYER_HEALTH
 		self.kills = 0
-		self.gun = 0			#Select Gun From List
+		self.gun = 0  # Current weapon index (0=pistol, 1=shotgun, 2=auto)
 		self.direction = 'W'
-		self.img = pygame.image.load("Images/survivor_w.png")
+		self.img = pygame.image.load(config.IMAGE_SURVIVOR_W)
 		Character.__init__(self, x, y)
 		
 
 
 	def draw(self, screen):
-		h = self.width//2
-		#pygame.draw.circle(screen, [77, 234, 156], (self.x + h, self.y + h), h)
-		
+		"""
+		Draw the survivor and current weapon to the screen.
+
+		Args:
+			screen: Pygame screen surface
+		"""
+		h = self.width // 2
+
+		# Draw survivor sprite
 		screen.blit(self.img, (self.x, self.y))
 		
 		img = Survivor.gunsImg[self.gun]
@@ -221,10 +296,9 @@ class Survivor(Character):
 			screen.blit(img, (self.x +h, self.y - h//2))
 
 
-	
 	def movement(self):
-		
-		vel = 10
+		"""Move the survivor towards the target tile if one is set."""
+		vel = config.PLAYER_SPEED
 		#Target Already Set
 		if self.tx != None and self.ty != None:
 
@@ -254,30 +328,40 @@ class Survivor(Character):
 
 
 	def rotate(self, direction):
+		"""
+		Rotate the survivor sprite to face the given direction.
 
+		Args:
+			direction (str): Direction to face ('N', 'S', 'E', 'W')
+		"""
 		if direction == 'N':
 			if self.direction != 'N':
 				self.direction = 'N'
-				self.img = pygame.image.load("Images/survivor_n.png")
+				self.img = pygame.image.load(config.IMAGE_SURVIVOR_N)
 
 		if direction == 'S':
 			if self.direction != 'S':
 				self.direction = 'S'
-				self.img = pygame.image.load("Images/survivor_s.png")
-			
+				self.img = pygame.image.load(config.IMAGE_SURVIVOR_S)
+
 		if direction == 'E':
 			if self.direction != 'E':
 				self.direction = 'E'
-				self.img = pygame.image.load("Images/survivor_e.png")
-			
+				self.img = pygame.image.load(config.IMAGE_SURVIVOR_E)
+
 		if direction == 'W':
 			if self.direction != 'W':
 				self.direction = 'W'
-				self.img = pygame.image.load("Images/survivor_w.png")
+				self.img = pygame.image.load(config.IMAGE_SURVIVOR_W)
 
 
 	def getBulletType(self):
+		"""
+		Get the bullet type string for the current weapon.
 
+		Returns:
+			str: Bullet type ("pistol", "shotgun", or "automatic")
+		"""
 		if self.gun == 0:
 			return "pistol"
 		elif self.gun == 1:
@@ -290,34 +374,53 @@ class Survivor(Character):
 
 
 class Bullets(pygame.Rect):
+	"""
+	Bullet/projectile class.
 
-	width, height = 7, 10
+	Handles all bullet types with different damage values and fire rates.
+	"""
+
+	width, height = config.BULLET_WIDTH, config.BULLET_HEIGHT
 	List = []
 
-	img = {	"pistol" : pygame.image.load("Images/pistol_b.png"),
-			"shotgun" : pygame.image.load("Images/shotgun_b.png"),
-			"automatic" : pygame.image.load("Images/automatic_b.png")}
+	img = {
+		"pistol": pygame.image.load(config.IMAGE_PISTOL_BULLET),
+		"shotgun": pygame.image.load(config.IMAGE_SHOTGUN_BULLET),
+		"automatic": pygame.image.load(config.IMAGE_AUTOMATIC_BULLET)
+	}
 
-	gunDmg = {	"pistol" : Zombie.health/3 + 1,
-				"shotgun" : Zombie.health/2,
-				"automatic" : Zombie.health/6 + 1 }
+	gunDmg = {
+		"pistol": config.PISTOL_DAMAGE,
+		"shotgun": config.SHOTGUN_DAMAGE,
+		"automatic": config.AUTOMATIC_DAMAGE
+	}
 
 
 	def __init__(self, x, y, velx, vely, direction, type_):
+		"""
+		Create a new bullet.
 
-		
-		#Bullet Spacing
-		try:		#Handle exceptions when the List is empty
-			dx = abs(Bullets.List[-1].x - x)
-			dy = abs(Bullets.List[-1].y - y)
+		Args:
+			x (int): Starting X coordinate
+			y (int): Starting Y coordinate
+			velx (int): X velocity (pixels per frame)
+			vely (int): Y velocity (pixels per frame)
+			direction (str): Direction bullet is traveling ('N', 'S', 'E', 'W')
+			type_ (str): Bullet type ("pistol", "shotgun", "automatic")
+		"""
+		# Enforce bullet spacing based on weapon type (fire rate limiting)
+		try:
+			if Bullets.List:  # Check if list is not empty
+				dx = abs(Bullets.List[-1].x - x)
+				dy = abs(Bullets.List[-1].y - y)
 
-			if dx < 50 and dy < 50 and type_ == "shotgun":
-				return
-			elif dx < 30 and dy < 30 and type_ == "pistol":
-				return
-			elif dx < 15 and dy < 15 and type_ == "automatic":
-				return
-		except:
+				if dx < config.SHOTGUN_SPACING and dy < config.SHOTGUN_SPACING and type_ == "shotgun":
+					return
+				elif dx < config.PISTOL_SPACING and dy < config.PISTOL_SPACING and type_ == "pistol":
+					return
+				elif dx < config.AUTOMATIC_SPACING and dy < config.AUTOMATIC_SPACING and type_ == "automatic":
+					return
+		except (IndexError, AttributeError):
 			pass
 
 
@@ -342,10 +445,16 @@ class Bullets(pygame.Rect):
 		Bullets.List.append(self)
 
 
-	
-
 	def offScreen(self, screen):
+		"""
+		Check if bullet has moved off screen.
 
+		Args:
+			screen: Pygame screen surface
+
+		Returns:
+			bool: True if bullet is off screen, False otherwise
+		"""
 		if self.x < 0:
 			return True
 		elif self.y < 0:
@@ -357,16 +466,22 @@ class Bullets(pygame.Rect):
 		else:
 			return False
 
-
 	@staticmethod
 	def collisionLoop(screen):
-		
+		"""
+		Update all bullets and check for collisions.
+
+		Args:
+			screen: Pygame screen surface
+		"""
+
 		for bullet in Bullets.List:
 
 			bullet.x += bullet.velx
 			bullet.y += bullet.vely
 
-			screen.blit(bullet.img, (bullet.x, bullet.y))
+			# Note: Bullets are now rendered in Main.render() method
+			# This method only updates positions and checks collisions
 
 			if bullet.offScreen(screen):
 				Bullets.List.remove(bullet)

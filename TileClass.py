@@ -1,14 +1,27 @@
-#Class For Manipulating Tiles
+"""
+Tile System for Zombie Apocalypse
 
-import pygame, Functions
+Manages the tile-based grid system used for movement and pathfinding.
+"""
 
-#Tile Class Which Inherit properties of rectangles
+import pygame
+
+import config
+import Functions
+
+
 class Tile(pygame.Rect):
+	"""
+	Tile class for grid-based game world.
+
+	Inherits from pygame.Rect for collision detection.
+	Stores pathfinding data (F, G, H values) and walkability status.
+	"""
 	
 	List = []
-	width, height = 40, 40
+	width, height = config.TILE_WIDTH, config.TILE_HEIGHT
 	totalTiles = 1
-	Hz, Vt = 1, 32
+	Hz, Vt = 1, config.GRID_COLUMNS  # Horizontal and Vertical tile counts
 
 	#Invalids For Current Screen Spec
 	invalids = (1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,34,35,36,
@@ -23,29 +36,39 @@ class Tile(pygame.Rect):
 				435,437,438,440,442,444,450,451,452,453,454,456,457,458,459,460,461,462,464,467,468,469,470,
 				472,476,490,498.499,504,506,508,509,511,512,520,525,526,527,498,499,534,539,540,543,374,249)
 
-	
 	def __init__(self, x, y, Type):
+		"""
+		Create a new tile.
 
+		Args:
+			x (int): X coordinate in pixels
+			y (int): Y coordinate in pixels
+			Type (str): Tile type ('empty' or 'solid')
+		"""
 		self.parent = None
-		self.F, self.G, self.H = 0, 0, 0
-						
-		self.type = Type 			#Type: Walkable or Not
+		self.F, self.G, self.H = 0, 0, 0  # A* pathfinding values
+
+		self.type = Type
 		self.number = Tile.totalTiles
 		Tile.totalTiles += 1
 
-		if Type == 'empty':
-			self.walkable = True
-		else:
-			self.walkable = False
+		self.walkable = (Type == 'empty')
 
 		pygame.Rect.__init__(self, (x, y), (Tile.width, Tile.height))
-
 		Tile.List.append(self)
 
-	
-	#Initialize The Tiles
 	@staticmethod
 	def preInit(screen, SCREENHEIGHT, SCREENWIDTH):
+		"""
+		Initialize the entire tile grid.
+
+		Creates all tiles for the game map, marking some as solid (walls).
+
+		Args:
+			screen: Pygame screen surface
+			SCREENHEIGHT (int): Height of the screen
+			SCREENWIDTH (int): Width of the screen
+		"""
 		for y in range(0, SCREENHEIGHT, Tile.height):
 			for x in range(0, SCREENWIDTH, Tile.width):
 				if Tile.totalTiles in Tile.invalids:
@@ -53,17 +76,29 @@ class Tile(pygame.Rect):
 				else:
 					Tile(x, y, 'empty')
 
-
 	@staticmethod
 	def getTile(number):
-		
+		"""
+		Get a tile by its number.
+
+		Args:
+			number (int): Tile number in the grid
+
+		Returns:
+			Tile: The tile with the given number, or None if not found
+		"""
 		for tile in Tile.List:
 			if tile.number == number:
 				return tile
 
-
 	@staticmethod
 	def drawTiles(screen):
+		"""
+		Draw all tiles to the screen (for debugging).
+
+		Args:
+			screen: Pygame screen surface
+		"""
 
 		half = Tile.width // 2
 

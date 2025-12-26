@@ -2,7 +2,7 @@
 
 A 2D tile-based survival game built with Python and pygame, featuring intelligent zombie AI powered by the A* pathfinding algorithm.
 
-![Version](https://img.shields.io/badge/version-1.0--beta-blue)
+![Version](https://img.shields.io/badge/version-2.0-blue)
 ![Python](https://img.shields.io/badge/python-3.8+-green)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
@@ -12,16 +12,20 @@ A 2D tile-based survival game built with Python and pygame, featuring intelligen
 
 ### Key Features
 
-- **Intelligent Enemy AI**: Zombies use A* pathfinding to navigate around walls and obstacles
-- **Tile-Based Movement**: 32x18 grid system with smooth character movement
-- **Multiple Weapons**: Three weapon types with different damage profiles and fire rates
+- 🎮 **Professional Main Menu**: Polished title screen with clickable buttons
+- 🧟 **Intelligent Enemy AI**: Zombies use A* pathfinding to navigate around walls and obstacles
+- 🎯 **Intuitive Controls**: Spacebar shooting with directional movement
+- 🏃 **Tile-Based Movement**: 32x18 grid system with smooth character movement
+- 🔫 **Multiple Weapons**: Three weapon types with different damage profiles and fire rates
   - Pistol: Balanced damage and fire rate
   - Shotgun: High damage, slower fire rate
   - Semi-Automatic: Rapid fire, lower damage per bullet
-- **Dynamic Spawning**: Zombies spawn from multiple locations at increasing rates
-- **Real-time Combat**: Shoot in 4 directions while moving independently
-- **Health & Score System**: Track your survival with health bar and kill counter
-- **Atmospheric Audio**: Background music and zombie sound effects
+- ⏸️ **Pause System**: Pause anytime with ESC key
+- 📊 **Statistics Tracking**: Track kills, survival time, and final health
+- 🔄 **Retry & Menu System**: Instant retry or return to main menu from game over
+- 🎨 **Enhanced Visuals**: Dramatic text effects with shadows and bold fonts
+- 🔊 **Atmospheric Audio**: Background music and zombie sound effects
+- 💀 **Dramatic Game Over**: Cinematic game over sequence with stats
 
 ## Screenshots
 
@@ -76,41 +80,62 @@ python3 Main.py
 
 ## How to Play
 
+### Game Flow
+
+1. **Main Menu** → Click "START GAME" or "QUIT"
+2. **Intro Screen** → Press any key to continue or wait 6 seconds
+3. **Gameplay** → Survive against zombie waves
+4. **Pause** → Press ESC anytime to pause/resume
+5. **Game Over** → View stats, then choose "RETRY" or "MAIN MENU"
+
 ### Game Controls
 
-#### Movement
-- **↑ Arrow Key** - Move North
-- **↓ Arrow Key** - Move South
-- **→ Arrow Key** - Move East
-- **← Arrow Key** - Move West
+#### Movement & Direction
+- **↑ Arrow Key** - Move North (character faces north)
+- **↓ Arrow Key** - Move South (character faces south)
+- **→ Arrow Key** - Move East (character faces east)
+- **← Arrow Key** - Move West (character faces west)
 
 #### Combat
-- **W** - Shoot North
-- **A** - Shoot West
-- **S** - Shoot South
-- **D** - Shoot East
+- **Spacebar** - Shoot in current facing direction
+- Arrow keys set your facing direction, Spacebar fires!
 
 #### Weapons
 - **Left Shift** - Cycle through weapons (Pistol → Shotgun → Semi-Automatic)
 
+#### Pause & Menu
+- **ESC** - Pause/Resume game
+- **Q** - Quit to desktop (while paused)
+
 ### Objective
 
-Survive as long as possible against waves of zombies. Zombies spawn periodically from designated spawn points and will hunt you down using intelligent pathfinding. Each zombie you kill increases your score.
+Survive as long as possible against endless waves of zombies. Zombies spawn periodically from designated spawn points and will hunt you down using intelligent pathfinding. Each zombie you kill increases your score.
 
 ### Gameplay Tips
 
 1. **Keep Moving**: Staying in one place allows zombies to surround you
 2. **Use Obstacles**: Navigate around walls to break line of sight
-3. **Weapon Selection**:
+3. **Face Your Target**: Move in the direction you want to shoot, then hit spacebar
+4. **Weapon Selection**:
    - Use the **Pistol** for balanced gameplay
    - Switch to **Shotgun** for powerful single shots
    - Use **Semi-Automatic** when surrounded
-4. **Watch Your Health**: You start with 1500 health; zombies deal 5 damage when adjacent
-5. **Monitor Spawn Points**: Zombies spawn from 6 fixed locations on the map
+5. **Watch Your Health**: You start with 1500 health; zombies deal 5 damage when adjacent
+6. **Monitor Spawn Points**: Zombies spawn from 6 fixed locations on the map
+7. **Take Breaks**: Use the pause menu (ESC) to take a breather
 
-### Game Over
+### Game Over Sequence
 
-The game ends when your health reaches 0. Your final score (total kills) will be displayed on the Game Over screen.
+When your health reaches 0:
+1. **Dramatic Game Over Image** (3 seconds) - Epic defeat screen
+2. **Statistics Screen** - View your performance:
+   - Total Kills
+   - Time Survived (minutes:seconds)
+   - Final Health
+3. **Choose Your Path**:
+   - **RETRY** - Jump right back into the action
+   - **MAIN MENU** - Return to title screen
+   - **Close Window** - Quit the game
 
 ## Technical Details
 
@@ -221,7 +246,33 @@ zombieapocalypse/
 
 ### Version History
 
-**Beta v1.0** (Current)
+**Version 2.0** (Current - 2025)
+- 🎮 **Complete UI Overhaul**:
+  - Professional main menu with clickable buttons
+  - Interactive pause menu with ESC key
+  - Enhanced game over screen with stats and options
+- 🎯 **Improved Controls**:
+  - Spacebar shooting system (replaced WASD)
+  - Directional movement with arrow keys
+  - Intuitive facing direction system
+- 🎨 **Visual Enhancements**:
+  - Dramatic text shadows and bold fonts
+  - Color-coded titles (red for dramatic effect)
+  - Enhanced button hover effects
+- 📊 **Statistics System**:
+  - Time survived tracking (minutes:seconds)
+  - Kill counter
+  - Final health display
+- 🔄 **Game Loop**:
+  - Retry functionality
+  - Return to main menu option
+  - Complete game flow cycle
+- 🐛 **Bug Fixes**:
+  - Fixed bullet rendering issue
+  - Fixed intro screen event handling
+  - Improved text centering on buttons
+
+**Beta v1.0** (Original)
 - Initial tile-based game implementation (32×18 grid)
 - Arrow key movement for player
 - A* pathfinding for zombie AI
@@ -229,19 +280,28 @@ zombieapocalypse/
 - Health and scoring system
 - Audio integration
 
-**Original Version**
+**Legacy Version**
 - Developed in Python 2.7
 - Migrated to Python 3.8+ (2025)
 - Updated syntax for modern Python compatibility
 
-### Migration Notes
+### Migration & Refactoring Notes
 
-This project was originally developed for Python 2.7. It has been successfully migrated to Python 3.8+ with the following changes:
+This project was originally developed for Python 2.7 and has undergone extensive modernization:
 
+**Python 3 Migration:**
 - Updated exception handling syntax (`except Exception, e:` → `except Exception as e:`)
 - Converted print statements to function calls (`print "text"` → `print("text")`)
 - Changed division operators for integer results (`/` → `//` in 8 locations)
 - Updated pygame to version 2.6.1+
+
+**Code Refactoring:**
+- Created `config.py` for centralized configuration
+- Implemented OOP structure with Game class
+- Added comprehensive docstrings to all modules
+- Separated rendering from game logic
+- Created reusable Button class for UI elements
+- Added utility functions for enhanced text rendering
 
 ## Credits
 

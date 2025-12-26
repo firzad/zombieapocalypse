@@ -1,11 +1,27 @@
-# A* Path Finding Algorithm
+"""
+A* Pathfinding Algorithm for Zombie Apocalypse
+
+Calculates optimal paths for zombies to chase the player,
+accounting for obstacles and walls.
+"""
 
 import pygame
-from ObjectClass import *
+
+import config
+from ObjectClass import Zombie
 from TileClass import Tile
 
 
 def AStar(screen, survivor, FPS, totalFrames):
+	"""
+	Run A* pathfinding for all zombies to find paths to the player.
+
+	Args:
+		screen: Pygame screen surface
+		survivor: Player character
+		FPS (int): Frames per second
+		totalFrames (int): Total frames elapsed
+	"""
 
 	#Surroundind Nodes in 8 Directions
 	N = -32
