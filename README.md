@@ -6,6 +6,12 @@ A 2D tile-based survival game built with Python and pygame, featuring intelligen
 ![Python](https://img.shields.io/badge/python-3.8+-green)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
+![Zombie Apocalypse Gameplay](Screenshots/gameplay.gif)
+
+*Survive against endless waves of intelligent zombies with A* pathfinding AI*
+
+---
+
 ## Overview
 
 **Zombie Apocalypse** is a top-down survival shooter where you play as a lone survivor defending against endless waves of zombies. The game showcases classic AI pathfinding with zombies using the A* algorithm to intelligently navigate around obstacles and hunt you down.
@@ -29,8 +35,37 @@ A 2D tile-based survival game built with Python and pygame, featuring intelligen
 
 ## Screenshots
 
+### Main Menu
+The polished main menu with clickable START GAME and QUIT buttons.
+
+<!-- Add screenshot: Screenshots/main_menu.png -->
+![Main Menu](Screenshots/main_menu.png)
+
 ### Gameplay
-The game features a detailed map with obstacles, a heads-up display showing health, kills, and current weapon, and increasingly challenging zombie waves.
+Intense zombie survival action featuring smooth 60 FPS gameplay, A* pathfinding AI, and three distinct weapons. The HUD displays health, kills, and current weapon.
+
+<!-- Add screenshot: Screenshots/gameplay.png -->
+![Gameplay](Screenshots/gameplay.png)
+
+### Pause Menu
+Press ESC anytime to pause the game and access the pause menu.
+
+<!-- Add screenshot: Screenshots/pause_menu.png -->
+![Pause Menu](Screenshots/pause_menu.png)
+
+### Game Over
+Dramatic game over screen showing your statistics - kills, survival time, and final health - with options to retry or return to the main menu.
+
+<!-- Add screenshot: Screenshots/game_over.png -->
+![Game Over](Screenshots/game_over.png)
+
+---
+
+**📸 To add screenshots:** Create a `Screenshots/` directory and add the following files:
+- `main_menu.png` - Main menu screen
+- `gameplay.png` - In-game action with zombies and HUD
+- `pause_menu.png` - Pause screen (press ESC during gameplay)
+- `game_over.png` - Game over statistics screen
 
 ## Installation
 
@@ -83,7 +118,7 @@ python3 Main.py
 ### Game Flow
 
 1. **Main Menu** → Click "START GAME" or "QUIT"
-2. **Intro Screen** → Press any key to continue or wait 6 seconds
+2. **Intro Screen** → Read instructions and press any key to continue
 3. **Gameplay** → Survive against zombie waves
 4. **Pause** → Press ESC anytime to pause/resume
 5. **Game Over** → View stats, then choose "RETRY" or "MAIN MENU"

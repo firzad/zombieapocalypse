@@ -114,10 +114,8 @@ class Game:
         """
         Display the intro/instruction screen.
 
-        Shows game title and controls. User can press any key to continue
-        or wait for auto-start after 6 seconds.
+        Shows game title and controls. User must press any key to continue.
         """
-        start_time = pygame.time.get_ticks()
         waiting = True
 
         while waiting:
@@ -160,12 +158,6 @@ class Game:
                 )
 
             pygame.display.update()
-
-            # Auto-continue after 6 seconds
-            elapsed_time = pygame.time.get_ticks() - start_time
-            if elapsed_time > (config.INTRO_DURATION * 1000):  # Convert seconds to milliseconds
-                waiting = False
-
             self.clock.tick(30)  # Run at 30 FPS during intro
 
     def show_main_menu(self):
