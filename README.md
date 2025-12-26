@@ -303,11 +303,6 @@ This project was originally developed for Python 2.7 and has undergone extensive
 - Created reusable Button class for UI elements
 - Added utility functions for enhanced text rendering
 
-## Credits
-
-### Development
-**PROJECT F.I.R.E** - Original Development Team
-
 ### Technologies
 - **Python** - Programming language
 - **pygame** - Game development library

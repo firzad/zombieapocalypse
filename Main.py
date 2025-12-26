@@ -4,7 +4,7 @@ Zombie Apocalypse - Main Game File
 A 2D tile-based survival game featuring intelligent zombie AI
 powered by the A* pathfinding algorithm.
 
-PROJECT F.I.R.E - Zombie Apocalypse Beta v1.0
+Zombie Apocalypse Beta v1.0
 """
 
 import pygame
