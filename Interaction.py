@@ -103,12 +103,12 @@ def interaction(screen, survivor, paused=False):
 	# Shooting with spacebar in current facing direction
 	if keys[pygame.K_SPACE]:
 		if survivor.direction == 'N':
-			Bullets(survivor.centerx, survivor.centery, 0, -10, 'N', survivor.getBulletType())
+			Bullets(survivor.centerx, survivor.centery, 0, -config.BULLET_SPEED, 'N', survivor.getBulletType())
 		elif survivor.direction == 'S':
-			Bullets(survivor.centerx, survivor.centery, 0, 10, 'S', survivor.getBulletType())
+			Bullets(survivor.centerx, survivor.centery, 0, config.BULLET_SPEED, 'S', survivor.getBulletType())
 		elif survivor.direction == 'E':
-			Bullets(survivor.centerx, survivor.centery, 10, 0, 'E', survivor.getBulletType())
+			Bullets(survivor.centerx, survivor.centery, config.BULLET_SPEED, 0, 'E', survivor.getBulletType())
 		elif survivor.direction == 'W':
-			Bullets(survivor.centerx, survivor.centery, -10, 0, 'W', survivor.getBulletType())
+			Bullets(survivor.centerx, survivor.centery, -config.BULLET_SPEED, 0, 'W', survivor.getBulletType())
 
 	return paused  # Return unchanged pause state

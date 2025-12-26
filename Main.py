@@ -101,6 +101,9 @@ class Game:
         # Game state
         self.paused = False
         self.game_start_time = None  # Will be set when game actually starts
+        self.last_update_time = pygame.time.get_ticks()  # For delta time calculation
+        self.pathfinding_timer = 0.0  # Timer for A* pathfinding updates
+        self.spawn_timer = 0.0  # Timer for zombie spawning
 
         # Load and play background music
         pygame.mixer.music.load(config.AUDIO_THEME)
@@ -332,23 +335,35 @@ class Game:
 
         return True  # Stay paused
 
-    def update_game_state(self):
+    def update_game_state(self, delta_time):
         """
-        Update all game entities and logic.
+        Update all game entities and logic with delta time for smooth movement.
+
+        Args:
+            delta_time (float): Time elapsed since last frame in seconds
 
         Handles zombie spawning, movement, pathfinding, and collision detection.
         """
-        # Spawn zombies
-        Zombie.spawn(self.total_frames, config.FPS)
+        # Update spawn timer and spawn zombies
+        self.spawn_timer += delta_time
+        if self.spawn_timer >= config.ZOMBIE_SPAWN_INTERVAL:
+            Zombie.spawn_timed()
+            self.spawn_timer = 0.0
 
-        # Update player
-        self.survivor.movement()
+        # Update player movement
+        self.survivor.movement(delta_time)
 
         # Update bullets and check collisions
-        Bullets.collisionLoop(self.screen)
+        Bullets.collisionLoop(self.screen, delta_time)
 
-        # Run A* pathfinding for zombies
-        AStar(self.screen, self.survivor, config.FPS, self.total_frames)
+        # Run A* pathfinding on a timer (not every frame for performance)
+        self.pathfinding_timer += delta_time
+        if self.pathfinding_timer >= config.PATHFINDING_UPDATE_INTERVAL:
+            AStar(self.screen, self.survivor, config.FPS, self.total_frames)
+            self.pathfinding_timer = 0.0
+
+        # Update zombie movement
+        Zombie.update_movement(delta_time)
 
         # Handle user input (including pause toggle)
         self.paused = interaction(self.screen, self.survivor, self.paused)
@@ -567,8 +582,13 @@ class Game:
                     self.clock.tick(config.FPS)  # Keep frame rate consistent
                 else:
                     # Normal gameplay
-                    # Update game state
-                    self.update_game_state()
+                    # Calculate delta time (time since last frame in seconds)
+                    current_time = pygame.time.get_ticks()
+                    delta_time = (current_time - self.last_update_time) / 1000.0  # Convert to seconds
+                    self.last_update_time = current_time
+
+                    # Update game state with delta time
+                    self.update_game_state(delta_time)
 
                     # Render everything
                     self.render()

@@ -156,6 +156,71 @@ class Zombie(Character):
 			Zombie(spawnNode.x, spawnNode.y)
 
 
+	@staticmethod
+	def spawn_timed():
+		"""
+		Spawn new zombies using time-based spawning (called by timer, not frames).
+
+		This method is called by the game loop's spawn timer for frame-independent spawning.
+		"""
+		# Play random zombie spawn sound
+		sound_path = choice(config.AUDIO_ZOMBIE_SPAWN)
+		sound = pygame.mixer.Sound(sound_path)
+		sound.set_volume(config.SFX_VOLUME)
+		sound.play()
+
+		# Select random spawn tile
+		spawnTileNumber = choice(Zombie.spawnTiles)
+		spawnNode = Tile.getTile(spawnTileNumber)
+
+		# Create new zombie
+		Zombie(spawnNode.x, spawnNode.y)
+
+
+	@staticmethod
+	def update_movement(delta_time):
+		"""
+		Update zombie movement with delta time for frame-independent movement.
+
+		Args:
+			delta_time (float): Time elapsed since last frame in seconds
+		"""
+		for zombie in Zombie.List:
+			# Target Already Set by A* pathfinding
+			if zombie.tx != None and zombie.ty != None:
+
+				X = zombie.x - zombie.tx
+				Y = zombie.y - zombie.ty
+
+				# Calculate movement distance based on speed and delta time
+				move_distance = zombie.vel * delta_time
+
+				# Move Right
+				if X < 0:
+					zombie.x += min(move_distance, abs(X))
+					zombie.rotate('E', zombie.originalImage)
+
+				# Move Left
+				elif X > 0:
+					zombie.x -= min(move_distance, abs(X))
+					zombie.rotate('W', zombie.originalImage)
+
+				# Move Up
+				if Y > 0:
+					zombie.y -= min(move_distance, abs(Y))
+					zombie.rotate('N', zombie.originalImage)
+
+				# Move Down
+				elif Y < 0:
+					zombie.y += min(move_distance, abs(Y))
+					zombie.rotate('S', zombie.originalImage)
+
+				# Target Reached (check if close enough due to floating point)
+				if abs(X) < 1 and abs(Y) < 1:
+					zombie.x = zombie.tx
+					zombie.y = zombie.ty
+					zombie.tx, zombie.ty = None, None
+
 
 	@staticmethod
 	def update(screen, survivor):
@@ -169,12 +234,12 @@ class Zombie(Character):
 
 
 		for zombie in Zombie.List:
-			
+
 			screen.blit(zombie.img, (zombie.x, zombie.y))
 
 			if survivor.x % Tile.width == 0 and survivor.y % Tile.height == 0:
 				if zombie.x % Tile.width == 0 and zombie.y % Tile.height == 0:
-					
+
 					tileNo = survivor.getNumber()
 
 					N = tileNo - Tile.Vt
@@ -200,36 +265,8 @@ class Zombie(Character):
 				Zombie.List.remove(zombie)
 				survivor.kills += 1
 
-			
-			#Target Already Set
-			if zombie.tx != None and zombie.ty != None:
-
-				X = zombie.x - zombie.tx
-				Y = zombie.y - zombie.ty
-
-				#Move Right
-				if X < 0:
-					zombie.x += zombie.vel
-					zombie.rotate('E', zombie.originalImage)
-				
-				#Move Left
-				elif X > 0:
-					zombie.x -= zombie.vel
-					zombie.rotate('W', zombie.originalImage)
-				
-				#Move Up
-				if Y > 0:
-					zombie.y -= zombie.vel
-					zombie.rotate('N', zombie.originalImage)
-				
-				#Move Down
-				elif Y < 0:
-					zombie.y += zombie.vel
-					zombie.rotate('S', zombie.originalImage)
-
-				#Target Reached
-				if X == 0 and Y == 0:
-					zombie.tx, zombie.ty = None, None
+			# Note: Movement is now handled in update_movement() method
+			# which is called separately with delta_time for frame-independent movement
 
 
 
@@ -296,9 +333,16 @@ class Survivor(Character):
 			screen.blit(img, (self.x +h, self.y - h//2))
 
 
-	def movement(self):
-		"""Move the survivor towards the target tile if one is set."""
-		vel = config.PLAYER_SPEED
+	def movement(self, delta_time):
+		"""
+		Move the survivor towards the target tile if one is set.
+
+		Args:
+			delta_time (float): Time elapsed since last frame in seconds
+		"""
+		# Calculate movement distance based on speed (pixels/second) and delta time
+		vel = config.PLAYER_SPEED * delta_time
+
 		#Target Already Set
 		if self.tx != None and self.ty != None:
 
@@ -307,22 +351,24 @@ class Survivor(Character):
 
 			#Move Right
 			if X < 0:
-				self.x += vel
-			
+				self.x += min(vel, abs(X))  # Don't overshoot target
+
 			#Move Left
 			elif X > 0:
-				self.x -= vel
-			
+				self.x -= min(vel, abs(X))
+
 			#Move Up
 			if Y > 0:
-				self.y -= vel
-			
+				self.y -= min(vel, abs(Y))
+
 			#Move Down
 			elif Y < 0:
-				self.y += vel
+				self.y += min(vel, abs(Y))
 
-			#Target Reached
-			if X == 0 and Y == 0:
+			#Target Reached (check if close enough due to floating point)
+			if abs(X) < 1 and abs(Y) < 1:
+				self.x = self.tx
+				self.y = self.ty
 				self.tx, self.ty = None, None
 
 
@@ -467,18 +513,20 @@ class Bullets(pygame.Rect):
 			return False
 
 	@staticmethod
-	def collisionLoop(screen):
+	def collisionLoop(screen, delta_time):
 		"""
 		Update all bullets and check for collisions.
 
 		Args:
 			screen: Pygame screen surface
+			delta_time (float): Time elapsed since last frame in seconds
 		"""
 
 		for bullet in Bullets.List:
 
-			bullet.x += bullet.velx
-			bullet.y += bullet.vely
+			# Update bullet position based on velocity and delta time
+			bullet.x += bullet.velx * delta_time
+			bullet.y += bullet.vely * delta_time
 
 			# Note: Bullets are now rendered in Main.render() method
 			# This method only updates positions and checks collisions
@@ -487,7 +535,7 @@ class Bullets(pygame.Rect):
 				Bullets.List.remove(bullet)
 				continue
 
-			
+
 			for zombie in Zombie.List:
 
 				if bullet.colliderect(zombie):

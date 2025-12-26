@@ -11,7 +11,7 @@ SCREEN_HEIGHT = 720
 WINDOW_TITLE = "Zombie Apocalypse"
 
 # Game Performance
-FPS = 20  # Frames per second
+FPS = 60  # Frames per second (increased from 20 for smoothness)
 
 # Tile System
 TILE_WIDTH = 40
@@ -23,13 +23,13 @@ GRID_ROWS = 18     # SCREEN_HEIGHT // TILE_HEIGHT
 PLAYER_START_X = 640  # Center of screen
 PLAYER_START_Y = 360  # Center of screen
 PLAYER_HEALTH = 1500
-PLAYER_SPEED = 10  # Pixels per frame
+PLAYER_SPEED = 200  # Pixels per second (was 10 pixels/frame * 20 FPS)
 
 # Zombie Settings
 ZOMBIE_HEALTH = 100
 ZOMBIE_DAMAGE = 5  # Damage per frame when adjacent
-ZOMBIE_SPAWN_INTERVAL = 1  # Spawn every N seconds (at FPS)
-ZOMBIE_SPEEDS = [4, 8]  # Random choice between these speeds
+ZOMBIE_SPAWN_INTERVAL = 1.0  # Spawn every N seconds
+ZOMBIE_SPEEDS = [80, 160]  # Pixels per second (was [4, 8] * 20 FPS)
 
 # Weapon Settings - Damage values
 PISTOL_DAMAGE = ZOMBIE_HEALTH // 3 + 1      # ~34 damage (3 shots to kill)
@@ -37,14 +37,18 @@ SHOTGUN_DAMAGE = ZOMBIE_HEALTH // 2          # 50 damage (2 shots to kill)
 AUTOMATIC_DAMAGE = ZOMBIE_HEALTH // 6 + 1    # ~17 damage (6 shots to kill)
 
 # Weapon Settings - Fire Rate (minimum pixel distance between bullets)
-PISTOL_SPACING = 30
-SHOTGUN_SPACING = 50
-AUTOMATIC_SPACING = 15
+# Adjusted for 500 pixels/second bullet speed
+PISTOL_SPACING = 150      # Medium fire rate
+SHOTGUN_SPACING = 250     # Slowest fire rate (high damage)
+AUTOMATIC_SPACING = 70    # Fastest fire rate (low damage)
 
 # Bullet Settings
-BULLET_SPEED = 10  # Pixels per frame
+BULLET_SPEED = 500  # Pixels per second - faster than player for better visuals
 BULLET_WIDTH = 7
 BULLET_HEIGHT = 10
+
+# A* Pathfinding Settings
+PATHFINDING_UPDATE_INTERVAL = 0.05  # Update paths every 0.05 seconds (20 times per second)
 
 # Audio Settings
 BACKGROUND_MUSIC_VOLUME = 0.7  # 0.0 to 1.0
