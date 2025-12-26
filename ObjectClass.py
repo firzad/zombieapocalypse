@@ -302,6 +302,7 @@ class Survivor(Character):
 		self.gun = 0  # Current weapon index (0=pistol, 1=shotgun, 2=auto)
 		self.direction = 'W'
 		self.img = pygame.image.load(config.IMAGE_SURVIVOR_W)
+		self.last_shot_time = 0  # Track last time weapon was fired (in milliseconds)
 		Character.__init__(self, x, y)
 		
 
@@ -414,6 +415,35 @@ class Survivor(Character):
 			return "shotgun"
 		elif self.gun == 2:
 			return "automatic"
+
+
+	def canFire(self):
+		"""
+		Check if enough time has passed since last shot for current weapon.
+
+		Returns:
+			bool: True if weapon can fire, False otherwise
+		"""
+		current_time = pygame.time.get_ticks()
+
+		# Get fire rate for current weapon (in seconds)
+		if self.gun == 0:
+			fire_rate = config.PISTOL_FIRE_RATE
+		elif self.gun == 1:
+			fire_rate = config.SHOTGUN_FIRE_RATE
+		elif self.gun == 2:
+			fire_rate = config.AUTOMATIC_FIRE_RATE
+		else:
+			fire_rate = 0.5
+
+		# Convert fire rate to milliseconds
+		fire_rate_ms = fire_rate * 1000
+
+		# Check if enough time has passed
+		if current_time - self.last_shot_time >= fire_rate_ms:
+			self.last_shot_time = current_time
+			return True
+		return False
 				
 
 
@@ -449,27 +479,15 @@ class Bullets(pygame.Rect):
 		Args:
 			x (int): Starting X coordinate
 			y (int): Starting Y coordinate
-			velx (int): X velocity (pixels per frame)
-			vely (int): Y velocity (pixels per frame)
+			velx (int): X velocity (pixels per second)
+			vely (int): Y velocity (pixels per second)
 			direction (str): Direction bullet is traveling ('N', 'S', 'E', 'W')
 			type_ (str): Bullet type ("pistol", "shotgun", "automatic")
+
+		Note:
+			Fire rate is now controlled by time-based checking in Survivor.canFire()
+			rather than spatial distance between bullets.
 		"""
-		# Enforce bullet spacing based on weapon type (fire rate limiting)
-		try:
-			if Bullets.List:  # Check if list is not empty
-				dx = abs(Bullets.List[-1].x - x)
-				dy = abs(Bullets.List[-1].y - y)
-
-				if dx < config.SHOTGUN_SPACING and dy < config.SHOTGUN_SPACING and type_ == "shotgun":
-					return
-				elif dx < config.PISTOL_SPACING and dy < config.PISTOL_SPACING and type_ == "pistol":
-					return
-				elif dx < config.AUTOMATIC_SPACING and dy < config.AUTOMATIC_SPACING and type_ == "automatic":
-					return
-		except (IndexError, AttributeError):
-			pass
-
-
 		self.type = type_
 		self.direction = direction
 		self.velx, self.vely = velx, vely

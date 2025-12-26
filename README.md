@@ -2,7 +2,7 @@
 
 A 2D tile-based survival game built with Python and pygame, featuring intelligent zombie AI powered by the A* pathfinding algorithm.
 
-![Version](https://img.shields.io/badge/version-2.0-blue)
+![Version](https://img.shields.io/badge/version-2.1-blue)
 ![Python](https://img.shields.io/badge/python-3.8+-green)
 ![License](https://img.shields.io/badge/license-MIT-orange)
 
@@ -151,18 +151,21 @@ The game is built using an object-oriented architecture with the following compo
 
 - **Zombie** (`ObjectClass.py`) - Enemy entity
   - Health: 100 HP
-  - Speed: Random (4 or 8 pixels per frame)
+  - Speed: Random (80 or 160 pixels per second)
   - Damage: 5 HP per frame when adjacent to player
   - Behavior: Uses A* pathfinding to chase player
+  - Movement: Frame-independent with delta time
 
 - **Survivor** (`ObjectClass.py`) - Player character
   - Health: 1500 HP
-  - Speed: 10 pixels per frame
-  - Weapons: 3 types with different stats
+  - Speed: 200 pixels per second
+  - Weapons: 3 types with time-based fire rates
   - Movement: Independent from shooting direction
+  - Fire Rate Control: Time-based cooldown system per weapon
 
 - **Bullets** (`ObjectClass.py`) - Projectile system
   - Three bullet types matching weapon selection
+  - Speed: 500 pixels per second
   - Collision detection with zombies and walls
   - Automatic cleanup when off-screen
 
@@ -174,24 +177,38 @@ The game is built using an object-oriented architecture with the following compo
 
 #### Key Algorithms
 
+**Delta Time System** (`Main.py`)
+- Frame-independent movement for consistent gameplay
+- All speeds measured in pixels/second instead of pixels/frame
+- Movement calculations use delta_time (seconds since last frame)
+- Ensures same gameplay speed regardless of frame rate
+- Prevents overshoot with minimum distance checks
+
 **A* Pathfinding** (`AStar.py`)
 - Calculates optimal path from each zombie to the player
 - Accounts for walls and obstacles
-- Updates every frame for real-time response
+- Updates 20 times per second (optimized, not every frame)
 - Uses Manhattan distance heuristic
 - Supports blocky (4-directional) or diagonal movement
 
 **Movement System**
 - Tile-based targeting with smooth interpolation
+- Frame-independent movement with delta time
 - Prevents out-of-bounds movement
 - Collision detection with solid tiles
 - Independent movement and shooting directions
 
+**Fire Rate System** (`ObjectClass.py` - Survivor)
+- Time-based weapon cooldowns (tracked in milliseconds)
+- Each weapon has independent fire rate
+- Prevents exploits from bullet position or player movement
+- Consistent fire rate regardless of game circumstances
+
 **Spawn System**
 - 6 predefined spawn locations across the map
-- Zombies spawn every second (20 frames at 20 FPS)
+- Zombies spawn every second (time-based, not frame-based)
 - Random spawn point selection
-- Random zombie speed variation
+- Random zombie speed variation (80 or 160 pixels/second)
 
 ### File Structure
 
@@ -227,26 +244,52 @@ zombieapocalypse/
 
 ### Performance Characteristics
 
-- **Frame Rate**: 20 FPS (configurable in `Main.py`)
+- **Frame Rate**: 60 FPS (smooth gameplay with delta time)
 - **Screen Resolution**: 1280×720 (configurable)
-- **A* Calculations**: Performed per zombie per frame (optimized with early exit)
+- **Delta Time System**: Frame-independent movement for consistent gameplay across frame rates
+- **A* Calculations**: Optimized to run 20 times per second (not every frame)
+- **Zombie Spawning**: Time-based (every 1 second) instead of frame-based
 - **Zombie List**: Dynamic (grows as more zombies spawn)
 
 ### Weapon Statistics
 
-| Weapon          | Damage per Hit | Fire Rate | Bullet Speed | Best Use Case          |
-|-----------------|----------------|-----------|--------------|------------------------|
-| Pistol          | 34 HP          | Medium    | 10 px/frame  | Balanced gameplay      |
-| Shotgun         | 50 HP          | Slow      | 10 px/frame  | High-damage single shots |
-| Semi-Automatic  | 17 HP          | Fast      | 10 px/frame  | Crowd control          |
+| Weapon          | Damage per Hit | Fire Rate (Time-Based) | Bullet Speed | Best Use Case          |
+|-----------------|----------------|----------------------|--------------|------------------------|
+| Pistol          | 34 HP (3 shots to kill) | 0.3 seconds/shot | 500 px/sec  | Balanced gameplay      |
+| Shotgun         | 100 HP (1 shot to kill!) | 0.6 seconds/shot  | 500 px/sec  | One-shot powerhouse |
+| Semi-Automatic  | 17 HP (6 shots to kill) | 0.08 seconds/shot | 500 px/sec | Rapid-fire crowd control |
 
-*Note: Zombie health is 100 HP*
+*Note: Zombie health is 100 HP. Fire rate is now time-based for consistent behavior regardless of frame rate or player position.*
 
 ## Development History
 
 ### Version History
 
-**Version 2.0** (Current - 2025)
+**Version 2.1** (Current - 2025)
+- ⚡ **60 FPS Smooth Gameplay**:
+  - Implemented delta time system for frame-independent movement
+  - Increased frame rate from 20 to 60 FPS
+  - All movement speeds converted to pixels/second
+- 🎯 **Time-Based Fire Rate System**:
+  - Fixed bug where fire rate depended on bullet position
+  - Implemented proper time-based weapon cooldowns
+  - Each weapon now has consistent fire rate regardless of circumstances
+  - Balanced fire rates for better gameplay:
+    - Shotgun: 0.6 seconds between shots (high damage)
+    - Pistol: 0.3 seconds between shots (balanced)
+    - Semi-Automatic: 0.08 seconds between shots (rapid fire)
+- 🚀 **Bullet Speed Increase**:
+  - Bullets now fly at 500 pixels/second (2.5× faster than player)
+  - Improved visual feedback and combat feel
+- 🎮 **Pathfinding Optimization**:
+  - A* pathfinding runs 20 times/second instead of every frame
+  - Reduced CPU usage while maintaining smooth zombie movement
+  - Fixed zombie stuttering issues
+- ⏱️ **Time-Based Spawning**:
+  - Zombie spawning now uses timers instead of frame counting
+  - Consistent spawn rate regardless of frame rate
+
+**Version 2.0** (2025)
 - 🎮 **Complete UI Overhaul**:
   - Professional main menu with clickable buttons
   - Interactive pause menu with ESC key

@@ -33,14 +33,14 @@ ZOMBIE_SPEEDS = [80, 160]  # Pixels per second (was [4, 8] * 20 FPS)
 
 # Weapon Settings - Damage values
 PISTOL_DAMAGE = ZOMBIE_HEALTH // 3 + 1      # ~34 damage (3 shots to kill)
-SHOTGUN_DAMAGE = ZOMBIE_HEALTH // 2          # 50 damage (2 shots to kill)
+SHOTGUN_DAMAGE = 100                          # 100 damage (1 shot to kill - powerful!)
 AUTOMATIC_DAMAGE = ZOMBIE_HEALTH // 6 + 1    # ~17 damage (6 shots to kill)
 
-# Weapon Settings - Fire Rate (minimum pixel distance between bullets)
-# Adjusted for 500 pixels/second bullet speed
-PISTOL_SPACING = 150      # Medium fire rate
-SHOTGUN_SPACING = 250     # Slowest fire rate (high damage)
-AUTOMATIC_SPACING = 70    # Fastest fire rate (low damage)
+# Weapon Settings - Fire Rate (time-based in seconds)
+# Time delay between shots for each weapon
+PISTOL_FIRE_RATE = 0.3      # Medium fire rate - 0.3 second delay between shots
+SHOTGUN_FIRE_RATE = 0.6     # Slowest fire rate - 0.6 second delay (high damage)
+AUTOMATIC_FIRE_RATE = 0.08  # Fastest fire rate - 0.08 second delay (low damage)
 
 # Bullet Settings
 BULLET_SPEED = 500  # Pixels per second - faster than player for better visuals
