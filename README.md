@@ -45,7 +45,7 @@ The polished main menu with clickable START GAME and QUIT buttons.
 Intense zombie survival action featuring smooth 60 FPS gameplay, A* pathfinding AI, and three distinct weapons. The HUD displays health, kills, and current weapon.
 
 <!-- Add screenshot: Screenshots/gameplay.png -->
-![Gameplay](Screenshots/gameplay.png)
+![Gameplay](Screenshots/gameplay.jpeg)
 
 ### Pause Menu
 Press ESC anytime to pause the game and access the pause menu.
